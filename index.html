@@ -17,7 +17,8 @@
             color: #ff9800;
             font-family: 'JetBrains Mono', monospace;
             font-size: 15px;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         .top-bar {
@@ -140,7 +141,7 @@
         .main-layout {
             display: grid;
             grid-template-columns: 67% 33%;
-            height: calc(100vh - 110px);
+            min-height: calc(100vh - 110px);
             background: #000;
         }
 
@@ -227,6 +228,47 @@
             padding: 15px 20px;
             overflow-y: auto;
             background: #0a0a0a;
+            font-size: 17px;
+        }
+
+        .right-panel .section-header {
+            font-size: 16px;
+        }
+
+        .right-panel .description-text {
+            font-size: 15px;
+        }
+
+        .right-panel .data-row {
+            font-size: 15px;
+        }
+
+        .right-panel .data-label {
+            font-size: 15px;
+        }
+
+        .right-panel .data-value {
+            font-size: 15px;
+        }
+
+        .right-panel .stat-label {
+            font-size: 12px;
+        }
+
+        .right-panel .stat-value {
+            font-size: 17px;
+        }
+
+        .right-panel .cert-title {
+            font-size: 15px;
+        }
+
+        .right-panel .cert-issuer {
+            font-size: 12px;
+        }
+
+        .right-panel .bullet {
+            font-size: 15px;
         }
 
         .panel {

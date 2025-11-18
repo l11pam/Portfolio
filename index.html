@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LPAM US Equity DES</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #ff9800;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            overflow: hidden;
+        }
+
+        .top-bar {
+            background: #1a1a1a;
+            padding: 5px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ff9800;
+            height: 32px;
+        }
+
+        .ticker-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .symbol {
+            color: #fff;
+            font-weight: 700;
+            font-size: 19px;
+        }
+
+        .price {
+            color: #00ff00;
+            font-weight: 700;
+            font-size: 19px;
+        }
+
+        .change-positive {
+            color: #00ff00;
+        }
+
+        .top-right {
+            display: flex;
+            gap: 15px;
+            font-size: 19px;
+            color: #999;
+        }
+
+        .header {
+            background: #0a0a0a;
+            padding: 8px 15px;
+            border-bottom: 2px solid #333;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .security-name {
+            color: #ff9800;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .menu-bar {
+            display: flex;
+            gap: 15px;
+            font-size: 19px;
+        }
+
+        .menu-item {
+            color: #00bcd4;
+            cursor: pointer;
+            padding: 3px 8px;
+            border: 1px solid #333;
+        }
+
+        .menu-item:hover {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .company-desc {
+            color: #999;
+            font-size: 19px;
+            margin-top: 3px;
+        }
+
+        .tabs {
+            background: #000;
+            display: flex;
+            border-bottom: 1px solid #333;
+            padding: 0;
+            gap: 6px;
+        }
+
+        .tab {
+            padding: 10px 25px;
+            background: #1a1a1a;
+            border: none;
+            color: #999;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 0 100%);
+            margin-right: 0;
+        }
+
+        .tab:hover {
+            background: #2a2a2a;
+            color: #ff9800;
+        }
+
+        .tab.active {
+            background: #000;
+            color: #ff9800;
+            border-bottom: 2px solid #ff9800;
+            z-index: 1;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 67% 33%;
+            height: calc(100vh - 110px);
+            background: #000;
+        }
+
+        .left-panel {
+            padding: 15px 20px;
+            overflow-y: auto;
+            border-right: 1px solid #333;
+            font-size: 17px;
+        }
+
+        .left-panel .section-header {
+            font-size: 16px;
+        }
+
+        .left-panel .description-text {
+            font-size: 15px;
+        }
+
+        .left-panel .info-value {
+            font-size: 17px;
+        }
+
+        .left-panel .info-label {
+            font-size: 12px;
+        }
+
+        .left-panel .exp-title {
+            font-size: 17px;
+        }
+
+        .left-panel .exp-company {
+            font-size: 15px;
+        }
+
+        .left-panel .exp-bullets {
+            font-size: 15px;
+        }
+
+        .left-panel .exp-date {
+            font-size: 14px;
+        }
+
+        .left-panel .project-title {
+            font-size: 17px;
+        }
+
+        .left-panel .project-desc {
+            font-size: 15px;
+        }
+
+        .left-panel .project-tech {
+            font-size: 12px;
+        }
+
+        .left-panel .contact-block {
+            font-size: 15px;
+        }
+
+        .left-panel .contact-label {
+            font-size: 12px;
+        }
+
+        .left-panel .contact-value {
+            font-size: 15px;
+        }
+
+        .left-panel .data-row {
+            font-size: 15px;
+        }
+
+        .left-panel .data-label {
+            font-size: 15px;
+        }
+
+        .left-panel .data-value {
+            font-size: 15px;
+        }
+
+        .left-panel .bullet {
+            font-size: 15px;
+        }
+
+        .right-panel {
+            padding: 15px 20px;
+            overflow-y: auto;
+            background: #0a0a0a;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .section-header {
+            color: #ff9800;
+            font-size: 14px;
+            font-weight: 700;
+            margin: 18px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #333;
+        }
+
+        .section-header:first-child {
+            margin-top: 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1px;
+            background: #333;
+            margin: 12px 0;
+        }
+
+        .info-cell {
+            background: #0a0a0a;
+            padding: 10px 12px;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .description-text {
+            color: #ccc;
+            font-size: 14px;
+            line-height: 1.7;
+            margin: 12px 0;
+        }
+
+        .experience-block {
+            margin: 15px 0;
+            padding: 15px;
+            background: #0a0a0a;
+            border-left: 3px solid #00bcd4;
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .exp-title {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .exp-date {
+            color: #666;
+            font-size: 19px;
+            white-space: nowrap;
+        }
+
+        .exp-company {
+            color: #ff9800;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .exp-bullets {
+            font-size: 19px;
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        .bullet {
+            margin: 5px 0;
+            padding-left: 12px;
+            position: relative;
+        }
+
+        .bullet:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #ff9800;
+        }
+
+        .tech-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 12px 0;
+        }
+
+        .tech-tag {
+            background: #1a1a1a;
+            color: #00bcd4;
+            padding: 5px 12px;
+            font-size: 12px;
+            border: 1px solid #333;
+            font-weight: 500;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-bottom: 1px solid #1a1a1a;
+            font-size: 19px;
+            background: #0a0a0a;
+            margin: 2px 0;
+        }
+
+        .data-label {
+            color: #999;
+        }
+
+        .data-value {
+            color: #fff;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .highlight-box {
+            background: #1a1a1a;
+            padding: 12px 15px;
+            margin: 12px 0;
+            border-left: 4px solid #00ff00;
+        }
+
+        .highlight-title {
+            color: #00ff00;
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .highlight-value {
+            color: #fff;
+            font-size: 23px;
+            font-weight: 700;
+        }
+
+        .contact-block {
+            background: #0a0a0a;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-left: 3px solid #ff9800;
+            font-size: 19px;
+        }
+
+        .contact-label {
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .contact-value {
+            color: #00bcd4;
+        }
+
+        .contact-value a {
+            color: #00bcd4;
+            text-decoration: none;
+        }
+
+        .contact-value a:hover {
+            color: #fff;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .stat-box {
+            background: #1a1a1a;
+            padding: 12px;
+            border-left: 3px solid #00ff00;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            color: #fff;
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        .cert-box {
+            background: #1a1a1a;
+            padding: 10px 12px;
+            margin: 6px 0;
+            border-left: 3px solid #00bcd4;
+            font-size: 19px;
+        }
+
+        .cert-title {
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .cert-issuer {
+            color: #999;
+        }
+
+        .project-block {
+            background: #0a0a0a;
+            padding: 15px;
+            margin: 12px 0;
+            border-left: 3px solid #00ff00;
+            transition: all 0.3s ease;
+            position: relative;
+            border-radius: 4px;
+        }
+
+        .project-block:hover {
+            background: #1a1a1a;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+            border-left-width: 5px;
+        }
+
+        .project-block:nth-child(1) {
+            border-left-color: #00ff00;
+        }
+
+        .project-block:nth-child(1):hover {
+            box-shadow: 0 4px 12px rgba(0, 255, 0, 0.3);
+        }
+
+        .project-block:nth-child(2) {
+            border-left-color: #00bcd4;
+        }
+
+        .project-block:nth-child(2):hover {
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+        }
+
+        .project-block:nth-child(3) {
+            border-left-color: #ff9800;
+        }
+
+        .project-block:nth-child(3):hover {
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+        }
+
+        .project-block:nth-child(4) {
+            border-left-color: #9c27b0;
+        }
+
+        .project-block:nth-child(4):hover {
+            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+        }
+
+        .project-block:nth-child(5) {
+            border-left-color: #f44336;
+        }
+
+        .project-block:nth-child(5):hover {
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+        }
+
+        .project-block:nth-child(6) {
+            border-left-color: #ffeb3b;
+        }
+
+        .project-block:nth-child(6):hover {
+            box-shadow: 0 4px 12px rgba(255, 235, 59, 0.3);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .project-title {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .github-link {
+            color: #666;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+        }
+
+        .github-link:hover {
+            color: #fff;
+            background: #1a1a1a;
+            border-color: #333;
+            transform: scale(1.1);
+        }
+
+        .github-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            margin-right: 4px;
+        }
+
+        .project-tech {
+            color: #ff9800;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .project-desc {
+            color: #aaa;
+            font-size: 19px;
+            line-height: 1.6;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .status-live {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            margin-right: 6px;
+        }
+
+        .metric-positive {
+            color: #00ff00;
+            font-weight: 700;
+        }
+
+        .education-block {
+            background: #0a0a0a;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-left: 3px solid #ff9800;
+        }
+
+        .edu-degree {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .edu-school {
+            color: #00bcd4;
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+
+        .edu-location {
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+        <div class="top-bar">
+        <div class="ticker-info">
+            <span class="symbol">LPAM US</span>
+            <span style="color: #666;">Equity</span>
+            <span class="price">▲ AVAILABLE</span>
+            <span class="change-positive">+5.0 YRS EXP</span>
+            <span style="color: #666;">|</span>
+            <span style="color: #666;">Vol HIGH</span>
+            <span style="color: #666;">Mkt Cap 180.049M</span>
+        </div>
+        <div class="top-right">
+            <span>MSG: +1</span>
+            <span>|</span>
+            <span id="time-display"></span>
+            <span>|</span>
+            <span><span class="status-live"></span>ACTIVE</span>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-row">
+            <div>
+                <div class="security-name">LAHARI PAMIDIPATI</div>
+                <div class="company-desc">Senior Software Engineer - Infrastructure & Security</div>
+            </div>
+            <div class="menu-bar">
+                <span class="menu-item">CN</span>
+                <span class="menu-item">DES</span>
+                <span class="menu-item">GP</span>
+                <span class="menu-item">HDS</span>
+                <span style="color: #333; font-size: 11px; margin-left: 10px;">PORTFOLIO:TERMINAL v1.0</span>
+            </div>
+        </div>
+        <div style="font-size: 10px; color: #666; margin-top: 5px;">
+            Classification: Technology - Infrastructure & Security Engineering | GICS: 45102010
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('overview')">Overview</button>
+        <button class="tab" onclick="switchTab('experience')">Experience</button>
+        <button class="tab" onclick="switchTab('projects')">Projects</button>
+        <button class="tab" onclick="switchTab('contact')">Contact</button>
+    </div>
+
+    <div class="main-layout">
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+            <!-- OVERVIEW TAB -->
+            <div class="panel active" id="overview">
+                <div class="section-header">PROFILE</div>
+                <div class="description-text">
+                    Senior Software Engineer with 5+ years engineering multi-cloud compute platforms and secure infrastructure 
+                    across healthcare, telecom, and financial domains. Proficient in AWS, Azure, and GCP with deep expertise in 
+                    Terraform, Kubernetes, Docker, and Packer for provisioning secure-by-default, automated infrastructure. Strong 
+                    Linux/Unix fundamentals with hands-on experience in authentication systems, IAM policies, and security hardening.
+                </div>
+                <div class="description-text">
+                    Skilled in building backend services using Python and Go, designing self-serve compute tooling, and implementing 
+                    CI/CD pipelines. Experience with authentication protocols (OAuth2.0, LDAP), encryption standards (TLS, HTTPS, SFTP), 
+                    and observability frameworks (CloudWatch, Prometheus, Grafana) supporting reliable, compliant production workloads.
+                </div>
+
+                <div class="section-header">EDUCATION</div>
+                <div class="education-block">
+                    <div class="edu-degree">Master of Science in Data Science</div>
+                    <div class="edu-school">Stevens Institute of Technology</div>
+                    <div class="edu-location">Hoboken, New Jersey, USA</div>
+                </div>
+                <div class="education-block">
+                    <div class="edu-degree">Bachelor of Technology in Computer Science</div>
+                    <div class="edu-school">Jawaharlal Nehru Technological University</div>
+                    <div class="edu-location">Hyderabad, India</div>
+                </div>
+
+                <div class="section-header">CORE EXPERTISE</div>
+                <div class="info-grid">
+                    <div class="info-cell">
+                        <div class="info-label">Specialization</div>
+                        <div class="info-value">Multi-Cloud Infrastructure</div>
+                    </div>
+                    <div class="info-cell">
+                        <div class="info-label">Development</div>
+                        <div class="info-value">Python, Go, Backend Services</div>
+                    </div>
+                    <div class="info-cell">
+                        <div class="info-label">Cloud Platforms</div>
+                        <div class="info-value">AWS, Azure, GCP</div>
+                    </div>
+                    <div class="info-cell">
+                        <div class="info-label">IaC & Containers</div>
+                        <div class="info-value">Terraform, K8s, Docker</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXPERIENCE TAB -->
+            <div class="panel" id="experience">
+                <div class="section-header">WORK HISTORY</div>
+
+                <div class="experience-block">
+                    <div class="exp-header">
+                        <div>
+                            <div class="exp-title">Senior Software Engineer - Infrastructure</div>
+                            <div class="exp-company">Smirta Innovation</div>
+                        </div>
+                        <div class="exp-date">May 2024 – Present</div>
+                    </div>
+                    <div class="exp-bullets">
+                        <div class="bullet">Built cloud-native pipelines on AWS and GCP for secure data ingestion using HTTPS and SFTP transfers</div>
+                        <div class="bullet">Designed secure workflows for customer data with encryption, IAM policies, and audit logging for HIPAA compliance</div>
+                        <div class="bullet">Developed Python and Go backend services for infrastructure automation and compute workload management</div>
+                        <div class="bullet">Worked with Kubernetes platforms (EKS, GKE) and ecosystem tools like Bottlerocket, Karpenter, Kyverno</div>
+                        <div class="bullet">Built immutable infrastructure using Docker and Packer for secure golden images in multi-cloud environments</div>
+                        <div class="bullet">Hardened cloud environments with IAM policies, encryption standards (TLS, SSH), and security best practices</div>
+                        <div class="bullet">Implemented observability with CloudWatch, Prometheus/Grafana reducing MTTR for compute workloads</div>
+                        <div class="bullet">Integrated authentication systems with LDAP and implemented secure access controls for infrastructure</div>
+                        <div class="bullet">Authored runbooks and operational documentation to support production readiness and compliance</div>
+                    </div>
+                </div>
+
+                <div class="experience-block">
+                    <div class="exp-header">
+                        <div>
+                            <div class="exp-title">Senior Software Engineer</div>
+                            <div class="exp-company">Verizon</div>
+                        </div>
+                        <div class="exp-date">Aug 2021 – Aug 2023</div>
+                    </div>
+                    <div class="exp-bullets">
+                        <div class="bullet">Migrated large-scale datasets across AWS, Azure, and GCP managing secure compute infrastructure</div>
+                        <div class="bullet">Developed Go-based services for automation and lifecycle management of multi-cloud compute workloads</div>
+                        <div class="bullet">Provisioned scalable infrastructure using Terraform across AWS (EC2, S3, Glue), Azure, and GCP</div>
+                        <div class="bullet">Built and managed secure-by-default golden images with Packer and Terraform for immutable infrastructure</div>
+                        <div class="bullet">Deployed containerized applications with Docker and integrated CI/CD pipelines using Jenkins and Git</div>
+                        <div class="bullet">Implemented authentication and access controls with IAM policies and security group configurations</div>
+                        <div class="bullet">Automated ETL pipelines with Python, Go, Airflow with embedded validation and testing for reliability</div>
+                        <div class="bullet">Implemented monitoring and observability with CloudWatch, Azure Monitor, GCP Operations Suite</div>
+                        <div class="bullet">Partnered with cross-functional teams ensuring compliance, audit readiness, and security standards</div>
+                    </div>
+                </div>
+
+                <div class="experience-block">
+                    <div class="exp-header">
+                        <div>
+                            <div class="exp-title">Data Analysis and Business Intelligence Specialist</div>
+                            <div class="exp-company">HCL Technologies Pvt Ltd</div>
+                        </div>
+                        <div class="exp-date">May 2019 – Jul 2021</div>
+                    </div>
+                    <div class="exp-bullets">
+                        <div class="bullet">Supported authentication systems and access control infrastructure using LDAP, PAM, and SSH frameworks</div>
+                        <div class="bullet">Built monitoring pipelines for authentication events, failed logins, and security anomalies</div>
+                        <div class="bullet">Automated certificate renewals and SSL/TLS deployment using Python and Ansible</div>
+                        <div class="bullet">Implemented Unix/Linux security frameworks including PAM configuration and SSSD integration</div>
+                        <div class="bullet">Developed Python automation for user provisioning, access reviews, and compliance reporting</div>
+                        <div class="bullet">Created reusable infrastructure modules for secure access systems using Terraform</div>
+                        <div class="bullet">Improved security incident detection time by 40% through automated alerting</div>
+                        <div class="bullet">Documented authentication troubleshooting procedures and security best practices</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROJECTS TAB -->
+            <div class="panel" id="projects">
+                <div class="section-header">FEATURED PROJECTS</div>
+
+                <div class="project-block">
+                    <div class="project-header">
+                        <div class="project-title">Multi-Region Highly Available Platform (SRE/DevOps)</div>
+                        <a href="https://github.com/yourusername/multi-region-ha-platform" target="_blank" class="github-link" title="View on GitHub">
+                            <svg class="github-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                    <div class="project-tech">AWS | Terraform | Route53 | RDS | Multi-Region | DR | Chaos Engineering</div>
+                    <div class="project-desc">
+                        Built enterprise-level architecture with multi-region AWS deployment (active–passive). Implemented Route53 health 
+                        checks and automated failover mechanisms. Configured RDS cross-region replication for data resilience. Developed 
+                        reusable Terraform modules for infrastructure provisioning. Conducted disaster recovery failover tests and chaos 
+                        engineering experiments to validate reliability at scale. Demonstrates deep understanding of high availability 
+                        patterns and production-grade reliability engineering.
+                    </div>
+                </div>
+
+                <div class="project-block">
+                    <div class="project-header">
+                        <div class="project-title">Zero-Downtime Canary Deployment System (K8s + Argo Rollouts)</div>
+                        <a href="https://github.com/yourusername/canary-deployment-system" target="_blank" class="github-link" title="View on GitHub">
+                            <svg class="github-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                    <div class="project-tech">Kubernetes | Argo Rollouts | GitHub Actions | Prometheus | CI/CD | Auto-Rollback</div>
+                    <div class="project-desc">
+                        Designed and implemented a production-grade canary deployment system for Kubernetes microservices. Integrated Argo 
+                        Rollouts for progressive traffic shifting with automatic rollback on latency regression. Built GitHub Actions CI/CD 
+                        pipelines for automated deployments. Implemented Prometheus-based gating metrics to ensure service health before 
+                        full rollout. Showcases advanced SRE skills in deployment engineering and risk mitigation strategies.
+                    </div>
+                </div>
+
+                <div class="project-block">
+                    <div class="project-header">
+                        <div class="project-title">HIPAA-Grade Secure Data Pipeline (Healthcare + DevOps)</div>
+                        <a href="https://github.com/yourusername/hipaa-data-pipeline" target="_blank" class="github-link" title="View on GitHub">
+                            <svg class="github-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                    <div class="project-tech">AWS | API Gateway | Lambda | DynamoDB | KMS | VPC | CloudTrail | HIPAA</div>
+                    <div class="project-desc">
+                        Architected a secure patient-like data ingestion system meeting HIPAA compliance requirements. Implemented API 
+                        Gateway → Lambda → DynamoDB architecture with end-to-end encryption using AWS KMS. Configured VPC endpoints for 
+                        private connectivity and CloudTrail for comprehensive audit logging. Built automated alerts for PHI-like field 
+                        detection. Created SLO dashboards tracking latency and ingestion success rates. Demonstrates expertise in 
+                        compliance engineering and secure infrastructure design.
+                    </div>
+                </div>
+
+                <div class="project-block">
+                    <div class="project-header">
+                        <div class="project-title">Full Observability Platform (Metrics, Logs, Alerts)</div>
+                        <a href="https://github.com/yourusername/observability-platform" target="_blank" class="github-link" title="View on GitHub">
+                            <svg class="github-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                    <div class="project-tech">Prometheus | Grafana | Loki | Alertmanager | SLOs | Error Budgets | Slack</div>
+                    <div class="project-desc">
+                        Built a complete observability infrastructure covering metrics, logs, and alerting. Deployed Prometheus for metrics 
+                        collection, Grafana for visualization dashboards, and Loki for log aggregation. Implemented SLOs (Service Level 
+                        Objectives) with error budget tracking. Configured Alertmanager with Slack integration for incident notification. 
+                        Demonstrates core SRE reliability engineering fundamentals and production monitoring best practices.
+                    </div>
+                </div>
+
+                <div class="project-block">
+                    <div class="project-header">
+                        <div class="project-title">AI-Powered Workout & Fitness Tracker (Personal SaaS)</div>
+                        <a href="https://github.com/yourusername/fitness-tracker" target="_blank" class="github-link" title="View on GitHub">
+                            <svg class="github-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                    <div class="project-tech">Python | AI/ML | REST API | Grafana | Alerts | Automation | PDF Reports</div>
+                    <div class="project-desc">
+                        Developed a personal fitness tracking platform with workout logging API and AI-powered form detection for rep 
+                        estimation. Built Grafana dashboards visualizing strength progress and training metrics. Implemented automated alerts 
+                        for missed training days. Created weekly performance reports delivered via PDF or email. Combines personal interest 
+                        with technical implementation, showcasing full-stack development and automation skills.
+                    </div>
+                </div>
+
+                <div class="project-block">
+                    <div class="project-header">
+                        <div class="project-title">Personal Productivity Automation Hub (Mini Developer Platform)</div>
+                        <a href="https://github.com/yourusername/productivity-hub" target="_blank" class="github-link" title="View on GitHub">
+                            <svg class="github-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                    <div class="project-tech">Python | Google Calendar API | Automation | Workflow Orchestration | Dashboards | Analytics</div>
+                    <div class="project-desc">
+                        Built a "Life DevOps" system for personal productivity automation. Developed automation workflows including daily plan 
+                        generation and deep-work session scheduling. Integrated with Google Calendar, reminders, and task management systems. 
+                        Created comprehensive dashboard showing productivity index, hours worked, meetings vs deep work ratio, and sleep vs 
+                        output correlation. Implements alerting for workload overload. Unique project demonstrating automation engineering 
+                        and workflow orchestration applied to personal productivity.
+                    </div>
+                </div>
+
+                <div class="section-header">TECHNICAL SKILLS BREAKDOWN</div>
+
+                <div style="margin: 15px 0;">
+                    <div style="color: #00bcd4; font-size: 10px; font-weight: 700; margin-bottom: 8px;">Backend Development & Languages</div>
+                    <div class="tech-grid">
+                        <div class="tech-tag">Python</div>
+                        <div class="tech-tag">Go</div>
+                        <div class="tech-tag">Java</div>
+                        <div class="tech-tag">C++</div>
+                        <div class="tech-tag">REST APIs</div>
+                        <div class="tech-tag">Microservices</div>
+                        <div class="tech-tag">gRPC</div>
+                    </div>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <div style="color: #00bcd4; font-size: 10px; font-weight: 700; margin-bottom: 8px;">Unix/Linux Security & Access</div>
+                    <div class="tech-grid">
+                        <div class="tech-tag">PAM (Pluggable Auth Modules)</div>
+                        <div class="tech-tag">SSH/OpenSSH</div>
+                        <div class="tech-tag">SSSD</div>
+                        <div class="tech-tag">SELinux</div>
+                        <div class="tech-tag">iptables/nftables</div>
+                        <div class="tech-tag">sudo/sudoers</div>
+                        <div class="tech-tag">RHEL/Ubuntu</div>
+                    </div>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <div style="color: #00bcd4; font-size: 10px; font-weight: 700; margin-bottom: 8px;">Encryption & Security Standards</div>
+                    <div class="tech-grid">
+                        <div class="tech-tag">TLS/SSL</div>
+                        <div class="tech-tag">PGP/GPG</div>
+                        <div class="tech-tag">X.509 Certificates</div>
+                        <div class="tech-tag">PKI Infrastructure</div>
+                        <div class="tech-tag">HSM Integration</div>
+                        <div class="tech-tag">AWS KMS</div>
+                        <div class="tech-tag">Secrets Management</div>
+                    </div>
+                </div>
+                <div style="margin: 15px 0;">
+                    <div style="color: #00bcd4; font-size: 10px; font-weight: 700; margin-bottom: 8px;">CI/CD & DevOps Tools</div>
+                    <div class="tech-grid">
+                        <div class="tech-tag">Jenkins</div>
+                        <div class="tech-tag">Git</div>
+                        <div class="tech-tag">GitHub Actions</div>
+                        <div class="tech-tag">CI/CD Pipelines</div>
+                    </div>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <div style="color: #00bcd4; font-size: 10px; font-weight: 700; margin-bottom: 8px;">Observability & Monitoring</div>
+                    <div class="tech-grid">
+                        <div class="tech-tag">CloudWatch</div>
+                        <div class="tech-tag">Prometheus</div>
+                        <div class="tech-tag">Grafana</div>
+                        <div class="tech-tag">GCP Operations Suite</div>
+                        <div class="tech-tag">Azure Monitor</div>
+                        <div class="tech-tag">Custom Dashboards</div>
+                    </div>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <div style="color: #00bcd4; font-size: 10px; font-weight: 700; margin-bottom: 8px;">Linux/Unix Systems</div>
+                    <div class="tech-grid">
+                        <div class="tech-tag">RHEL/Ubuntu</div>
+                        <div class="tech-tag">Linux Administration</div>
+                        <div class="tech-tag">Unix Fundamentals</div>
+                        <div class="tech-tag">System Security</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTACT TAB -->
+            <div class="panel" id="contact">
+                <div class="section-header">CONTACT INFORMATION</div>
+                
+                <div class="contact-block">
+                    <div class="contact-label">Phone</div>
+                    <div class="contact-value"><a href="tel:551-227-5611">+1 (551) 227-5611</a></div>
+                </div>
+
+                <div class="contact-block">
+                    <div class="contact-label">Email</div>
+                    <div class="contact-value"><a href="mailto:pamidipatilahari1@gmail.com">pamidipatilahari1@gmail.com</a></div>
+                </div>
+
+                <div class="contact-block">
+                    <div class="contact-label">LinkedIn</div>
+                    <div class="contact-value"><a href="https://www.linkedin.com/in/laharipamidipati/" target="_blank" rel="noopener noreferrer">linkedin.com/in/laharipamidipati</a></div>
+                </div>
+
+                <div class="contact-block">
+                    <div class="contact-label">GitHub</div>
+                    <div class="contact-value"><a href="https://github.com/laharipamidipati" target="_blank" rel="noopener noreferrer">github.com/laharipamidipati</a></div>
+                </div>
+
+                <div class="contact-block">
+                    <div class="contact-label">Location</div>
+                    <div class="contact-value">Jersey City, New Jersey, USA</div>
+                </div>
+
+                <div class="contact-block">
+                    <div class="contact-label">Time Zone</div>
+                    <div class="contact-value">EST (UTC-5) / EDT (UTC-4)</div>
+                </div>
+
+                <div class="section-header">AVAILABILITY</div>
+                <div class="highlight-box">
+                    <div class="highlight-title"><span class="status-live"></span>OPEN TO OPPORTUNITIES</div>
+                    <div style="color: #aaa; font-size: 10px; margin-top: 8px;">
+                        Available for full-time positions and consulting engagements
+                    </div>
+                </div>
+
+                <div class="section-header">WORK PREFERENCES</div>
+                <div class="contact-block">
+                    <div class="contact-label">Work Model</div>
+                    <div class="contact-value">Hybrid / Remote / On-site</div>
+                </div>
+                <div class="contact-block">
+                    <div class="contact-label">Location Preference</div>
+                    <div class="contact-value">New York Metro Area</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+            <div class="section-header">STATISTICS</div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Experience</div>
+                    <div class="stat-value">5+ YRS</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Projects</div>
+                    <div class="stat-value">50+</div>
+                </div>
+                <div class="stat-box" style="border-left-color: #ff9800;">
+                    <div class="stat-label">Companies</div>
+                    <div class="stat-value">3</div>
+                </div>
+                <div class="stat-box" style="border-left-color: #ff9800;">
+                    <div class="stat-label">Sectors</div>
+                    <div class="stat-value">4</div>
+                </div>
+            </div>
+
+            <div class="section-header">CERTIFICATIONS</div>
+            <div class="cert-box">
+                <div class="cert-title">AWS Certified Solutions Architect</div>
+                <div class="cert-issuer">Amazon Web Services - Associate</div>
+            </div>
+            <div class="cert-box">
+                <div class="cert-title">Microsoft Azure Fundamentals</div>
+                <div class="cert-issuer">Microsoft Corporation</div>
+            </div>
+
+            <div class="section-header">EXPERTISE LEVELS</div>
+            <div class="data-row">
+                <span class="data-label">Cloud Infrastructure (AWS/Azure/GCP)</span>
+                <span class="data-value" style="color: #00ff00; text-align: right;">▰▰▰▰▰</span>
+            </div>
+            <div style="color: #666; font-size: 9px; margin: -4px 0 8px 0; padding: 0 10px;">Designed HA architectures; automated IaC pipelines across multi-region workloads.</div>
+            <div class="data-row">
+                <span class="data-label">Backend Development (Python/Go)</span>
+                <span class="data-value" style="color: #00ff00; text-align: right;">▰▰▰▰▰</span>
+            </div>
+            <div style="color: #666; font-size: 9px; margin: -4px 0 8px 0; padding: 0 10px;">Built scalable microservices and automation tools; implemented REST APIs and data pipelines.</div>
+            <div class="data-row">
+                <span class="data-label">IaC & Automation (Terraform/Packer)</span>
+                <span class="data-value" style="color: #00ff00; text-align: right;">▰▰▰▰▰</span>
+            </div>
+            <div style="color: #666; font-size: 9px; margin: -4px 0 8px 0; padding: 0 10px;">Provisioned infrastructure as code; created golden images and automated deployment workflows.</div>
+            <div class="data-row">
+                <span class="data-label">Containers & Orchestration (K8s/Docker)</span>
+                <span class="data-value" style="text-align: right;"><span style="color: #00ff00;">▰▰▰▰</span><span style="color: #333;">▱</span></span>
+            </div>
+            <div style="color: #666; font-size: 9px; margin: -4px 0 8px 0; padding: 0 10px;">Deployed containerized apps on EKS/GKE; managed K8s clusters with canary rollouts.</div>
+            <div class="data-row">
+                <span class="data-label">Security & Access Control</span>
+                <span class="data-value" style="text-align: right;"><span style="color: #00ff00;">▰▰▰▰</span><span style="color: #333;">▱</span></span>
+            </div>
+            <div style="color: #666; font-size: 9px; margin: -4px 0 8px 0; padding: 0 10px;">Implemented IAM policies, LDAP integration, and encryption standards for compliance.</div>
+            <div class="data-row">
+                <span class="data-label">Linux/Unix Systems</span>
+                <span class="data-value" style="color: #00ff00; text-align: right;">▰▰▰▰▰</span>
+            </div>
+            <div style="color: #666; font-size: 9px; margin: -4px 0 8px 0; padding: 0 10px;">Configured PAM, SSH, and authentication systems; hardened Linux environments.</div>
+
+            <div class="section-header">INDUSTRY EXPERIENCE</div>
+            <div class="data-row">
+                <span class="data-label">Healthcare</span>
+                <span class="data-value" style="color: #00ff00;">✓</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">Telecommunications</span>
+                <span class="data-value" style="color: #00ff00;">✓</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">Financial Services</span>
+                <span class="data-value" style="color: #00ff00;">✓</span>
+            </div>
+
+            <div class="section-header">COLLABORATION & COMMUNICATION</div>
+            <div class="description-text" style="font-size: 19px;">
+                <div class="bullet">Cross-functional stakeholder engagement</div>
+                <div class="bullet">Multi-team coordination & alignment</div>
+                <div class="bullet">Translating business needs to technical solutions</div>
+                <div class="bullet">Technical documentation & mentoring</div>
+            </div>
+
+            <div class="section-header">BEYOND THE CODE</div>
+            <div class="description-text" style="font-size: 19px; color: #aaa; line-height: 1.7;">
+                I love exploring new technologies and pushing creative boundaries. In my free time, I build side 
+                projects and experiment with different tech stacks—like this Bloomberg-Terminal–style portfolio 
+                (with a few custom hacks) that you're viewing right now.
+                <br><br>
+                Lately, I've been enjoying what I call <span style="color: #00bcd4;">"vibecoding"</span>—those 
+                late-night sessions where curiosity drives the keyboard, blending engineering with creativity. 
+                Whether it's trying a new framework or just coding for the pure joy of it, I'm always tinkering 
+                with something new.
+                <br><br>
+                When I'm not debugging code, you'll find me debugging my cooking experiments. I host dinner parties 
+                every week—turns out I enjoy containerizing curries and orchestrating courses just as much as I do 
+                Kubernetes pods. My kitchen has 99.9% uptime, though the occasional deployment to DoorDash is 
+                sometimes necessary. 🍳
+                <br><br>
+                I also enjoy exploring new places and collecting memories. Whether it's discovering a hidden gem in 
+                the city or road-tripping to somewhere new, I'm always up for an adventure. Consider me a distributed 
+                systems engineer—constantly syncing across different locations. 🗺️
+                <br><br>
+                I collect hobbies the way engineers collect side projects—enthusiastically, and sometimes with questionable ROI—but always with good vibes.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Get the event target properly
+            const clickedTab = event ? event.target : document.querySelector('.tab.active');
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            if (clickedTab) {
+                clickedTab.classList.add('active');
+            }
+            
+            // Hide all panels
+            const panels = document.querySelectorAll('.panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+            
+            // Show selected panel
+            const selectedPanel = document.getElementById(tabName);
+            if (selectedPanel) {
+                selectedPanel.classList.add('active');
+            }
+        }
+
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeDisplay = document.getElementById('time-display');
+            if (timeDisplay) {
+                timeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+        }
+        
+        // Initialize time on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+        });
+    </script>
+</body>
+</html>; margin-bottom: 8px;">Cloud Platforms & Services</div>
+                    <div class="tech-grid">
+                        <div class="tech-tag">AWS EC2</div>
+                        <div class="tech-tag">AWS S3</div>
+                        <div class="tech-tag">AWS RDS</div>
+                        <div class="tech-tag">AWS IAM</div>
+                        <div class="tech-tag">AWS Lambda</div>
+                        <div class="tech-tag">AWS VPC</div>
+                        <div class="tech-tag">AWS EKS</div>
+                        <div class="tech-tag">AWS CloudWatch</div>
+                        <div class="tech-tag">AWS KMS</div>
+                        <div class="tech-tag">Azure</div>
+                        <div class="tech-tag">GCP</div>
+                    </div>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <div style="color: #00bcd4; font-size: 10px; font-weight: 700; margin-bottom: 8px;">Infrastructure & Automation</div>
+                    <div class="tech-grid">
+                        <div class="tech-tag">Terraform</div>
+                        <div class="tech-tag">Ansible</div>
+                        <div class="tech-tag">Packer</div>
+                        <div class="tech-tag">CloudFormation</div>
+                        <div class="tech-tag">Python</div>
+                        <div class="tech-tag">Bash</div>
+                        <div class="tech-tag">PowerShell</div>
+                    </div>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <div style="color: #00bcd4; font-size: 10px; font-weight: 700; margin-bottom: 8px;">Authentication & Identity Protocols</div>
+                    <div class="tech-grid">
+                        <div class="tech-tag">OAuth2.0</div>
+                        <div class="tech-tag">OIDC (OpenID Connect)</div>
+                        <div class="tech-tag">SAML 2.0</div>
+                        <div class="tech-tag">FIDO/WebAuthn</div>
+                        <div class="tech-tag">JWT/JWE/JWS</div>
+                        <div class="tech-tag">LDAP/Active Directory</div>
+                        <div class="tech-tag">Kerberos</div>
+                        <div class="tech-tag">RADIUS</div>
+                        <div class="tech-tag">SSO (Single Sign-On)</div>
+                        <div class="tech-tag">MFA (Multi-Factor Auth)</div>
+                        <div class="tech-tag">Federated Identity</div>
+                    </div>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <div style="color: #00bcd4; font-size: 10px; font-weight: 700

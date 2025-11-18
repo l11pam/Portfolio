@@ -637,6 +637,166 @@
             color: #666;
             font-size: 12px;
         }
+
+        /* Responsive Design for Mobile and Tablet */
+        @media screen and (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .right-panel {
+                border-top: 1px solid #333;
+                border-right: none;
+            }
+
+            .left-panel {
+                border-right: none;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            body {
+                font-size: 13px;
+                overflow-y: auto;
+            }
+
+            .top-bar {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 8px 10px;
+            }
+
+            .ticker-info {
+                flex-wrap: wrap;
+                gap: 10px;
+                font-size: 10px;
+            }
+
+            .top-right {
+                flex-wrap: wrap;
+                gap: 8px;
+                font-size: 9px;
+            }
+
+            .header {
+                padding: 8px 10px;
+            }
+
+            .security-name {
+                font-size: 14px;
+            }
+
+            .company-desc {
+                font-size: 10px;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .tab {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+
+            .main-layout {
+                height: auto;
+            }
+
+            .left-panel,
+            .right-panel {
+                padding: 10px 12px;
+            }
+
+            .left-panel {
+                font-size: 14px;
+            }
+
+            .left-panel .section-header {
+                font-size: 13px;
+            }
+
+            .left-panel .description-text {
+                font-size: 12px;
+            }
+
+            .left-panel .project-title {
+                font-size: 14px;
+            }
+
+            .left-panel .project-desc {
+                font-size: 12px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .github-link {
+                margin-left: 0;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            body {
+                font-size: 11px;
+            }
+
+            .top-bar {
+                padding: 6px 8px;
+            }
+
+            .ticker-info {
+                font-size: 9px;
+                gap: 6px;
+            }
+
+            .symbol {
+                font-size: 14px;
+            }
+
+            .price {
+                font-size: 14px;
+            }
+
+            .header {
+                padding: 6px 8px;
+            }
+
+            .security-name {
+                font-size: 12px;
+            }
+
+            .tab {
+                padding: 6px 12px;
+                font-size: 10px;
+            }
+
+            .left-panel,
+            .right-panel {
+                padding: 8px 10px;
+            }
+
+            .left-panel {
+                font-size: 12px;
+            }
+
+            .section-header {
+                font-size: 11px;
+            }
+        }
     </style>
 </head>
 <body>

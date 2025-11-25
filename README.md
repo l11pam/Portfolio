@@ -14,13 +14,3 @@ Visit the live site: [https://l11pam.github.io/portfolio](https://l11pam.github.
 - Real-time clock display
 - Modern dark theme with orange/cyan accents
 
-## Technologies
-
-- HTML5
-- CSS3
-- Vanilla JavaScript
-
-## Setup
-
-Simply open `index.html` in your browser or deploy to GitHub Pages.
-
